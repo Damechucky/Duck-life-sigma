@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>click the box sigma</h1>
+    
+    
+    <div id="score">Score: 0</div>
+    <div id="timer">time left 30s</div>
+    
+
+    <div id="menu">
+      <h2>happy motherdays mom!</h2>
+      <button id="startButton">Start Game</button>
+    </div>
+
+
+    <div id="endScreen" style="display: none">
+      <h2>game over!</h2>
+      <p id="finalScore">your score: 0</p>
+      <button id="restartButton">restart</button>
+      </div>
+
+
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <script>
+      const menu = document.getElementById("menu");
+      const startButton = document.getElementById("startButton");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const timerDisplay = document.getElementById("timer");
+      const scoreDisplay = document.getElementById("score");
+      const endScreen = document.getElementById("endScreen");
+      const finalScore = document.getElementById("finalScore");
+      const restartButton = document.getElementById("restartButton");
+
+      let score = 0;
+      let timeleft = 30;
+      let timerInterval;
+
+      let block = {
+        x: 50,
+        y: 50,
+        width: 50,
+        height: 50,
+        dy: 2,
+        dx: 2,
+        color: "#FFC0CB",
+      };
+      startButton.addEventListener("click", () => {
+        menu.style.display = "none";
+        startTimer();
+        draw();
+      });
+
+      restartButton.addEventListener("click", () => {
+        location.reload();
+      });
+
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          timeleft--;
+          timerDisplay.textContent = "timeleft:" + timeleft + "s";
+          if (timeleft <= 0) {
+            clearInterval(timerInterval);
+finalScore.textContent ="your score: " + score;
+endScreen.style.display = "block";
+            }
+          }, 1000)
+        }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = block.color;
+        ctx.fillRect(block.x, block.y, block.width, block.height);
+        block.x += block.dx;
+        block.y += block.dy;
+        if (block.x + block.width > canvas.width || block.x < 0) {
+          block.dx *= -1;
+        }
+        if (block.y + block.height > canvas.height || block.y < 0) {
+          block.dy *= -1;
+        }
+        requestAnimationFrame(draw);
+      }
+      canvas.addEventListener("click", function (e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        if (
+          mouseX >= block.x &&
+          mouseX <= block.x + block.width &&
+          mouseY >= block.y &&
+          mouseY <= block.y + block.height
+        ) {
+          score++;
+          scoreDisplay.textContent = "Score: " + score;
+          const colorChoices = [
+            "#FF0000",
+            "#FFC0CB",
+            "#FFA07A",
+            "#FF69B4",
+            "#FF1493",
+          ];
+          block.color =
+            colorChoices[Math.floor(Math.random() * colorChoices.length)];
+        }
+      });
+    </script>
+  </body>
+</html>
