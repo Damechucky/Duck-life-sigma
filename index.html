@@ -8,24 +8,20 @@
   </head>
   <body>
     <h1>click the box sigma</h1>
-    
-    
+
     <div id="score">Score: 0</div>
     <div id="timer">time left 30s</div>
-    
 
     <div id="menu">
-      <h2>happy motherdays mom!</h2>
+      <h2>happy hello mom!</h2>
       <button id="startButton">Start Game</button>
     </div>
-
 
     <div id="endScreen" style="display: none">
       <h2>game over!</h2>
       <p id="finalScore">your score: 0</p>
       <button id="restartButton">restart</button>
-      </div>
-
+    </div>
 
     <canvas id="canvas" width="600" height="400"></canvas>
     <script>
@@ -68,11 +64,11 @@
           timerDisplay.textContent = "timeleft:" + timeleft + "s";
           if (timeleft <= 0) {
             clearInterval(timerInterval);
-finalScore.textContent ="your score: " + score;
-endScreen.style.display = "block";
-            }
-          }, 1000)
-        }
+            finalScore.textContent = "your score: " + score;
+            endScreen.style.display = "block";
+          }
+        }, 1000);
+      }
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
