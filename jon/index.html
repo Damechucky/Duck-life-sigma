@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/jon/style.css" />
   </head>
   <body>
-    <h1>click the box sigma</h1>
+    <h1>click the box for points, get 30 for the win</h1>
 
     <div id="score">Score: 0</div>
     <div id="timer">time left 30s</div>
@@ -21,6 +21,12 @@
       <h2>game over!</h2>
       <p id="finalScore">your score: 0</p>
       <button id="restartButton">restart</button>
+    </div>
+
+    <div id="winScreen" style="display: none;">
+<h2 id="LevelQh2">you win</h2>
+   <p id="levelQp">You got all 30 points</p>   
+      <button id="nextLevelButton">nextLevel</button>
     </div>
 
     <canvas id="canvas" width="600" height="400"></canvas>
@@ -48,6 +54,7 @@
         dx: 2,
         color: "#FFC0CB",
       };
+      
       startButton.addEventListener("click", () => {
         menu.style.display = "none";
         startTimer();
@@ -105,6 +112,12 @@
           ];
           block.color =
             colorChoices[Math.floor(Math.random() * colorChoices.length)];
+
+if (score >= 30) {
+clearInterval(timerInterval)
+  canvas.style.display = "none";
+  document.getElementById("winScreen").style.display = "block";
+}  
         }
       });
     </script>
