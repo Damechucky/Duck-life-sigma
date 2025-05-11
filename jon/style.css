@@ -19,6 +19,7 @@ body {
 #score {
   font-size: 24px;
   margin: 20px;
+  text-align: center;
 }
 
 #menu,
@@ -41,6 +42,7 @@ body {
 #menu h2 {
   font-size: 50px;
   margin-bottom: 70px;
+  text-align: center;
 }
 
 #startButton {
@@ -52,6 +54,7 @@ body {
   border-radius: 20px 20px 20px 20px;
   justify-content: center;
   text-align: center;
+
 }
 
 #endScreen h2 {
@@ -59,6 +62,7 @@ body {
   font-size: 50px;
   margin: 35px;
   border-radius: 20px;
+  text-align: center;
 }
 
 #endScreen p {
@@ -66,6 +70,7 @@ body {
   border-radius: 20px;
   border: 3px solid red;
   margin: 35px;
+  text-align: center;
 }
 
 #restartButton {
@@ -75,6 +80,9 @@ body {
   border-radius: 20px;
   font-size: 36px;
   padding: 28px;
+  text-align: center;
+  display: block;
+  margin: 0 auto;
 }
 #nextLevelButton {
   background-color: #f17272;
@@ -83,14 +91,19 @@ body {
 font-size: 36px;
   padding: 28px;
   color: #000000;
+  text-align: center;
+  display: block;
+  margin: 0 auto;
 }
 #LevelQh2 {
 color: #cc3b3b;
 font-size: 50px;
 margin: 70px;
+  text-align: center;
 }
 #levelQp {
 color: #cc3b3b;
 font-size: 36px;
   margin:35px;
+  text-align: center;
 }
