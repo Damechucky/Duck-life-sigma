@@ -22,7 +22,8 @@ body {
 }
 
 #menu,
-#endScreen {
+#endScreen,
+#winScreen{
   position: absolute;
   top: 0;
   bottom: 0;
@@ -74,4 +75,22 @@ body {
   border-radius: 20px;
   font-size: 36px;
   padding: 28px;
+}
+#nextLevelButton {
+  background-color: #f17272;
+  border: 3px solid red;
+  border-radius: 20px;
+font-size: 36px;
+  padding: 28px;
+  color: #000000;
+}
+#LevelQh2 {
+color: #cc3b3b;
+font-size: 50px;
+margin: 70px;
+}
+#levelQp {
+color: #cc3b3b;
+font-size: 36px;
+  margin:35px;
 }
