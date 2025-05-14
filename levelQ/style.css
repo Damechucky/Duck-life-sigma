@@ -37,6 +37,7 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 10;
+  gap: 20px;
 }
 
 #menu h2 {
@@ -73,7 +74,7 @@ body {
   text-align: center;
 }
 
-#restartButton {
+#restartButton, #nextLevelButton {
   color: #000000;
   background-color: #749ef1;
   border: 3px solid #006eff;
@@ -81,20 +82,12 @@ body {
   font-size: 36px;
   padding: 28px;
   text-align: center;
-  display: block;
-  margin: 0 auto;
+  cursor: pointer;
+  margin: 10px; 
+  display: inline-flex;
+  justify-content: center;
 }
-#nextLevelButton {
-  background-color: #74c7f1;
-  border: 3px solid #0033ff;
-  border-radius: 20px;
-font-size: 36px;
-  padding: 28px;
-  color: #000000;
-  text-align: center;
-  display: block;
-  margin: 0 auto;
-}
+
 #LevelQh2 {
 color: #3c7bcd;
 font-size: 50px;
