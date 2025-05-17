@@ -4,11 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sigma box game</title>
-
     <link rel="stylesheet" href="/levelQ/style.css" />
   </head>
   <body>
-    <h1>click the box for points, get 30 for the win</h1>
+    <h1 id="headingpl">click the box for points, get 30 for the win</h1>
 
     <div id="score">Score: 0</div>
     <div id="timer">time left: 30s</div>
@@ -44,17 +43,20 @@
       const endScreen = document.getElementById("endScreen");
       const finalScore = document.getElementById("finalScore");
       const restartButton = document.getElementById("restartButton");
-
+const headingpl = document.getElementById("headingpl");
+      
       let score = 0;
       let timeLeft = 30;
       let timerInterval;
       let currentLevel = "Q";
+      let animationFrameId;
 
       const levelText = {
         Q: {
+          titlepl: "click the box for points, get 30 for the win",
           title: "Level Q",
-          customHeader: "click 30 times to win",
-          winHeader: "wow you good a at clicking a box ",
+          customHeader: "click 3 times to win",
+          winHeader: "wow you good a at clicking a box",
           winMessage: `wow keep up the good work`,
           nextLabel: "Level W",
           time: 30,
@@ -65,22 +67,23 @@
           height: 50,
         },
         W: {
+          titlepl: "click the box for points, get 3 for the win",
           title: "Level W",
-    customHeader: "click it 3 times to win!",
+    customHeader: "click it 9999999 times to win!",
   winHeader: "Keep on clicking",
           winMessage: `make sure to click the box next round`,
           nextLabel: "Level E",
           time: 10,
           requiredPoints: 3,
-          dx: 4,
-          dy: 4,
+          dx: 16,
+          dy: 16,
           width: 50,
           height: 50,
         },
         E: {
           title: "Level E",
-          customHeader:
-            "click 9999999999999 to win you not wining still testing",
+          titlepl: "click the box for points, get 9999999999999 for the win",
+            customHeader: "click 9999999999999 to win you not wining still testing",
           winHeader: "keep on goin?",
           winMessage: "and touch some grass",
           nextLabel: "Level R",
@@ -112,19 +115,20 @@
         block.height = settings.height;
         timeLeft = settings.time || 30;
         scoreDisplay.textContent = "Score: 0";
-        timerDisplay.textContent = "time Left: " + timeLeft + "s";
+        timerDisplay.textContent = "time left: " + timeLeft + "s";
       }
 
       function startLevel(level) {
+        cancelAnimationFrame(animationFrameId);
+        loadLevelSettings(level);
         canvas.style.display = "block";
         document.getElementById("winScreen").style.display = "none";
         endScreen.style.display = "none";
         score = 0;
         timeLeft = levelText[level].time || 30;
         scoreDisplay.textContent = "Score: 0";
-        timerDisplay.textContent = "timeLeft: " + timeLeft + "s";
-
-        loadLevelSettings(level);
+        timerDisplay.textContent = "time left: " + timeLeft + "s";
+        headingpl.textContent = levelText[currentLevel].titlepl;
         draw();
       }
 
@@ -133,6 +137,7 @@
         startLevel(currentLevel);
         startTimer();
 
+        
         winText.textContent =
           levelText[currentLevel].customHeader ||
           levelText[currentLevel].winHeader;
@@ -160,7 +165,7 @@
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
           timeLeft--;
-          timerDisplay.textContent = "time Left:" + timeLeft + "s";
+          timerDisplay.textContent = "time left: " + timeLeft + "s";
           if (timeLeft <= 0) {
             clearInterval(timerInterval);
             finalScore.textContent = "your score: " + score;
@@ -182,7 +187,7 @@
         if (block.y + block.height > canvas.height || block.y < 0) {
           block.dy *= -1;
         }
-        requestAnimationFrame(draw);
+        animationFrameId = requestAnimationFrame(draw);
       }
       canvas.addEventListener("click", function (e) {
         const rect = canvas.getBoundingClientRect();
@@ -218,6 +223,7 @@
             winSub.innerHTML = levelText[currentLevel].winMessage;
             nextLevelButton.textContent = levelText[currentLevel].nextLabel;
             nextLevelButton.style.display = "inline-block";
+            
           }
         }
       });
