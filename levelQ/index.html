@@ -30,249 +30,259 @@
 
     <canvas id="canvas" width="600" height="400"></canvas>
     <script>
-                              const nextLevelButton = document.getElementById("nextLevelButton");
-                              const winText = document.getElementById("LevelQh2");
-                              const winSub = document.getElementById("levelQp");
-                              const menu = document.getElementById("menu");
-                              const startButton = document.getElementById("startButton");
-                              const canvas = document.getElementById("canvas");
-                              const ctx = canvas.getContext("2d");
-                              const timerDisplay = document.getElementById("timer");
-                              const scoreDisplay = document.getElementById("score");
-                              const endScreen = document.getElementById("endScreen");
-                              const finalScore = document.getElementById("finalScore");
-                              const restartButton = document.getElementById("restartButton");
-                        const headingpl = document.getElementById("headingpl");
+      const nextLevelButton = document.getElementById("nextLevelButton");
+      const winText = document.getElementById("LevelQh2");
+      const winSub = document.getElementById("levelQp");
+      const menu = document.getElementById("menu");
+      const startButton = document.getElementById("startButton");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const timerDisplay = document.getElementById("timer");
+      const scoreDisplay = document.getElementById("score");
+      const endScreen = document.getElementById("endScreen");
+      const finalScore = document.getElementById("finalScore");
+      const restartButton = document.getElementById("restartButton");
+      const headingpl = document.getElementById("headingpl");
 
+      let score = 0;
+      let timeLeft = 30;
+      let timerInterval;
+      let currentLevel = "Q";
+      let animationFrameId;
 
-                              let score = 0;
-                              let timeLeft = 30;
-                              let timerInterval;
-                              let currentLevel = "Q";
-                              let animationFrameId;
+      let minusGreenMode = true;
+      let isPlusMode = false;
 
-                              let minusGreenMode = true;
-                        let isPlusMode = false;
+      let minusGreenModeInterval;
+      let plusModeInterval;
 
-                              let minusGreenModeInterval;
-                  let    plusModeInterval;
+      const colorChoices = [
+        "#FF0000",
+        "#CD5C5C",
+        "#FF4500",
+        "#DC143C",
+        "#B22222",
+      ];
+      let block = {
+        x: 50,
+        y: 50,
+        width: 50,
+        height: 50,
+        dy: 2,
+        dx: 2,
+        color: "#000000",
+      };
 
+      const levelText = {
+        Q: {
+          titlepl: "click the box for points, get 30 for the win",
+          title: "Level Q",
+          customHeader: "click 3 times to win",
+          winHeader: "wow you good a at clicking a box",
+          winMessage: "wow keep up the good work",
+          nextLabel: "Level W",
+          time: 30,
+          requiredPoints: 30,
+          dx: 2,
+          dy: 2,
+          width: 50,
+          height: 50,
+          modes: [],
+        },
+        W: {
+          titlepl: "click the box for points, get 3 for the win",
+          title: "Level W",
+          customHeader: "click it 9999999 times to win!",
+          winHeader: "Keep on clicking",
+          winMessage: "make sure to click the box next round",
+          nextLabel: "Level E",
+          time: 12,
+          requiredPoints: 7,
+          dx: 2,
+          dy: 2,
+          width: 50,
+          height: 50,
+          modes: ["minusGreenMode"],
+        },
+        E: {
+          title: "Level E",
+          titlepl: "click the box for points, get 9999999999999 for the win",
+          customHeader:
+            "click 9999999999999 to win you not wining still testing",
+          winHeader: "keep on goin?",
+          winMessage: "and touch some grass",
+          nextLabel: "Level R",
+          time: 999999999999,
+          requiredPoints: 9999999999999,
+          dx: 2,
+          dy: 2,
+          width: 50,
+          height: 50,
+          modes: ["plusMode"],
+        },
+      };
+      // sigmas add more levls here??from q to m left to righ in the keyboard alphabetttttttttttttttttttttt
 
-                        const colorChoices = [ "#FF0000", "#CD5C5C", "#FF4500", "#DC143C", "#B22222",];
-                  let block = { x: 50, y: 50, width: 50, height: 50,dy: 2, dx: 2, color: "#000000", };
+      function initModes(level) {
+        minusGreenMode = false;
+        isPlusMode = false;
 
-                              const levelText = {
-                                Q: {
-                                  titlepl: "click the box for points, get 30 for the win",
-                                  title: "Level Q",
-                                  customHeader: "click 3 times to win",
-                                  winHeader: "wow you good a at clicking a box",
-                                  winMessage: "wow keep up the good work",
-                                  nextLabel: "Level W",
-                                  time: 30,
-                                  requiredPoints: 30,
-                                  dx: 2,
-                                  dy: 2,
-                                  width: 50,
-                                  height: 50,
-                                   modes: [],
-                                },
-                                W: {
-                                  titlepl: "click the box for points, get 3 for the win",
-                                  title: "Level W",
-                            customHeader: "click it 9999999 times to win!",
-                          winHeader: "Keep on clicking",
-                                  winMessage: "make sure to click the box next round",
-                                  nextLabel: "Level E",
-                                  time: 12,
-                                  requiredPoints: 7,
-                                  dx: 2,
-                                  dy: 2,
-                                  width: 50,
-                                  height: 50,
-                                   modes: ["minusGreenMode"],
-                                },
-                                E: {
-                                  title: "Level E",
-                                  titlepl: "click the box for points, get 9999999999999 for the win",
-                                    customHeader: "click 9999999999999 to win you not wining still testing",
-                                  winHeader: "keep on goin?",
-                                  winMessage: "and touch some grass",
-                                  nextLabel: "Level R",
-                                  time: 999999999999,
-                                  requiredPoints: 9999999999999,
-                                  dx: 2,
-                                  dy: 2,
-                                  width: 50,
-                                  height: 50,
-                                   modes: ["plusMode"],
-                                },
-                              };
-            // sigmas add more levls here??from q to m left to righ in the keyboard alphabetttttttttttttttttttttt
+        (levelText[level].modes || []).forEach((m) => {
+          if (m === "minusGreenMode") minusGreenMode = true;
+          if (m === "plusMode") isPlusMode = true;
+        });
+      }
 
+      function loadLevelSettings(level) {
+        const settings = levelText[level];
+        block.dx = settings.dx;
+        block.dy = settings.dy;
+        block.width = settings.width;
+        block.height = settings.height;
+        timeLeft = settings.time || 30;
+        scoreDisplay.textContent = "Score: 0";
+        timerDisplay.textContent = "time left: " + timeLeft + "s";
+        headingpl.textContent = levelText[currentLevel].titlepl;
+        block.x = 50;
+        block.y = 50;
+        block.color = "#FF0000";
+      }
 
-            function initModes(level) {
-            minusGreenMode = false;
-              isPlusMode = false;
+      function startLevel(level) {
+        cancelAnimationFrame(animationFrameId);
+        clearInterval(minusGreenModeInterval);
+        clearInterval(plusModeInterval);
+        clearInterval(timerInterval);
 
-              (levelText[level].modes || []).forEach(m => {
-            if (m === "minusGreenMode") minusGreenMode = true;
-                if (m === "plusMode") isPlusMode = true;
-              });
-            }
+        loadLevelSettings(level);
+        initModes(level);
 
-                              function loadLevelSettings(level) {
-                                const settings = levelText[level];
-                                block.dx = settings.dx;
-                                block.dy = settings.dy;
-                                block.width = settings.width;
-                                block.height = settings.height;
-                                timeLeft = settings.time || 30;
-                                scoreDisplay.textContent = "Score: 0";
-                                timerDisplay.textContent = "time left: " + timeLeft + "s";
-                                headingpl.textContent = levelText[currentLevel].titlepl;
-                                block.x = 50;
-                                block.y = 50;
-                                block.color = "#FF0000";
-                              }
+        timeLeft = levelText[level].time || 30;
+        scoreDisplay.textContent = "Score: 0";
+        timerDisplay.textContent = "time left: " + timeLeft + "s";
+        headingpl.textContent = levelText[currentLevel].titlepl;
 
-                              function startLevel(level) {
-                                cancelAnimationFrame(animationFrameId);
-                                clearInterval(minusGreenModeInterval);
-                                clearInterval(plusModeInterval);
+        canvas.style.display = "block";
+        endScreen.style.display = "none";
+        document.getElementById("winScreen").style.display = "none";
+        score = 0;
 
-                                loadLevelSettings(level);
-                                initModes(level);
+        if (minusGreenMode) startminusGreenMode();
+        if (isPlusMode) startPlusMode();
+        startTimer();
+        draw();
+      }
 
-                                timeLeft = levelText[level].time || 30;
-                                scoreDisplay.textContent = "Score: 0";
-                                timerDisplay.textContent = "time left: " + timeLeft + "s";
-                                headingpl.textContent = levelText[currentLevel].titlepl;
+      function startminusGreenMode() {
+        minusGreenModeInterval = setInterval(() => {
+          block.color = "#00FF00";
+          setTimeout(() => {
+            block.color = "#FF0000";
+          }, 1000);
+        }, 2500);
+      }
 
-                               canvas.style.display = "block";
-                  endScreen.style.display = "none";
-                  document.getElementById("winScreen").style.display = "none";
-                  score = 0;
+      function startPlusMode() {
+        plusModeInterval = setInterval(() => {
+          isPlusMode = true;
+          block.color = "#FFC0CB";
+          setTimeout(() => {
+            block.color = "#FF0000";
+            isPlusMode = false;
+          }, 2000);
+        }, 5000);
+      }
 
-                     if (minusGreenMode) startminusGreenMode();
-                                if (isPlusMode) startPlusMode();
-                  draw();
-                              }
+      function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          timerDisplay.textContent = "time left: " + timeLeft + "s";
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            finalScore.textContent = "your score: " + score;
+            endScreen.style.display = "block";
+            canvas.style.display = "none";
+          }
+        }, 1000);
+      }
 
-            function startminusGreenMode(){
-                minusGreenModeInterval = setInterval(() => {
-      block.color = "#00FF00";
-                setTimeout(() => {
-                  block.color = "#FF0000";
-                }, 1000);
-              }, 2500)
-            }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = block.color;
+        ctx.fillRect(block.x, block.y, block.width, block.height);
+        block.x += block.dx;
+        block.y += block.dy;
+        if (block.x + block.width > canvas.width || block.x < 0) {
+          block.dx *= -1;
+        }
+        if (block.y + block.height > canvas.height || block.y < 0) {
+          block.dy *= -1;
+        }
+        animationFrameId = requestAnimationFrame(draw);
+      }
+      canvas.addEventListener("click", function (e) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        if (
+          mouseX >= block.x &&
+          mouseX <= block.x + block.width &&
+          mouseY >= block.y &&
+          mouseY <= block.y + block.height
+        ) {
+          if (isPlusMode && block.color === "#FFC0CB") {
+            score = Math.max(0, score + 2);
+          } else {
+            score++;
+          }
 
-                  function startPlusMode() {
-                    block.color = "#FF0000";
+          if (minusGreenMode && block.color === "#00FF00") {
+            score = Math.max(0, score - 2);
+          }
 
-                      plusModeInterval = setInterval (() => {
-                      isPlusMode = true;
-                      block.color = "#FFC0CB";
-                      setTimeout(() => {
+          if (!minusGreenMode && !isPlusMode) {
+            block.color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
+          }
+          scoreDisplay.textContent = "Score: " + score;
 
-                        block.color = "#FF0000";
-                        isPlusMode = false;
-                    }, 2000);
-                  }, 5000);
-                  }
+          if (score >= levelText[currentLevel].requiredPoints) {
+            clearInterval(timerInterval);
+            clearInterval(minusGreenModeInterval);
+            clearInterval(plusModeInterval);
+            canvas.style.display = "none";
+            document.getElementById("winScreen").style.display = "block";
 
-            function startTimer() {
-              clearInterval(timerInterval);
-              timerInterval = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = "time left: " + timeLeft + "s";
-                if (timeLeft <= 0) {
-                  clearInterval(timerInterval);
-                  finalScore.textContent = "your score: " + score;
-                  endScreen.style.display = "block";
-                  canvas.style.display = "none";
-                }
-              }, 1000);
-            }
+            winText.textContent =
+              levelText[currentLevel].customHeader ||
+              levelText[currentLevel].winHeader;
+            winSub.innerHTML = levelText[currentLevel].winMessage;
+            nextLevelButton.textContent = levelText[currentLevel].nextLabel;
+            nextLevelButton.style.display = "inline-block";
+          }
+        }
+      });
 
-            function draw() {
-              ctx.clearRect(0, 0, canvas.width, canvas.height);
-              ctx.fillStyle = block.color;
-              ctx.fillRect(block.x, block.y, block.width, block.height);
-              block.x += block.dx;
-              block.y += block.dy;
-              if (block.x + block.width > canvas.width || block.x < 0) {
-                block.dx *= -1;
-              }
-              if (block.y + block.height > canvas.height || block.y < 0) {
-                block.dy *= -1;
-              }
-              animationFrameId = requestAnimationFrame(draw);
-            }
-            canvas.addEventListener("click", function (e) {
-              const rect = canvas.getBoundingClientRect();
-              const mouseX = e.clientX - rect.left;
-              const mouseY = e.clientY - rect.top;
-              if (
-                mouseX >= block.x &&
-                mouseX <= block.x + block.width &&
-                mouseY >= block.y &&
-                mouseY <= block.y + block.height
-              ) {
-                if (isPlusMode ) {
-                  score = Math.max(0, score + 2);
-              } else {
-                score++;
-              }
-              if (minusGreenMode && block.color === "#00FF00" ) {
-                  score = Math.max(0, score - 2);
-              }
-              if (!minusGreenMode || block.color !== "#00FF00") {
-      block.color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
-              }
-              scoreDisplay.textContent = "Score: " + score;
+      startButton.addEventListener("click", () => {
+        menu.style.display = "none";
+        startLevel(currentLevel);
+      });
+      restartButton.addEventListener("click", () => {
+        endScreen.style.display = "none";
+        score = 0;
+        timeLeft = levelText[currentLevel].time;
+        startLevel(currentLevel);
+      });
 
-
-                if (score >= levelText[currentLevel].requiredPoints) {
-                clearInterval(timerInterval);
-                  clearInterval(minusGreenModeInterval);
-                  clearInterval(plusModeInterval);
-                canvas.style.display = "none";
-                document.getElementById("winScreen").style.display = "block";
-
-                winText.textContent =
-                  levelText[currentLevel].customHeader ||
-                  levelText[currentLevel].winHeader;
-                winSub.innerHTML = levelText[currentLevel].winMessage;
-                nextLevelButton.textContent = levelText[currentLevel].nextLabel;
-                nextLevelButton.style.display = "inline-block";
-                }
-            }
-                                    });
-
-            startButton.addEventListener("click", () => {
-            menu.style.display = "none";
-            startLevel(currentLevel);
-            startTimer();
-            });
-                              restartButton.addEventListener("click", () => {
-                                endScreen.style.display = "none";
-                                score = 0;
-                                timeLeft = levelText[currentLevel].time
-                                startLevel(currentLevel);
-                                startTimer();
-                              });
-
-                              nextLevelButton.addEventListener("click", () => {
-                                if (currentLevel === "Q") {
-                                  currentLevel = "W";
-                                } else if (currentLevel === "W") {
-                                  currentLevel = "E";
-                                  nextLevelButton.style.display = "none";
-                                }
-                                startLevel(currentLevel);
-                              });
+      nextLevelButton.addEventListener("click", () => {
+        if (currentLevel === "Q") {
+          currentLevel = "W";
+        } else if (currentLevel === "W") {
+          currentLevel = "E";
+          nextLevelButton.style.display = "none";
+        }
+        startLevel(currentLevel);
+      });
     </script>
   </body>
 </html>
