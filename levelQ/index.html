@@ -8,7 +8,6 @@
   </head>
   <body>
     <h1 id="headingpl">click the box for points, get 30 for the win</h1>
-
     <div id="score">Score: 0</div>
     <div id="timer">time left: 30s</div>
 
@@ -43,60 +42,27 @@
       const endScreen = document.getElementById("endScreen");
       const finalScore = document.getElementById("finalScore");
       const restartButton = document.getElementById("restartButton");
-const headingpl = document.getElementById("headingpl");
-      
+      const headingpl = document.getElementById("headingpl");
+
       let score = 0;
       let timeLeft = 30;
       let timerInterval;
       let currentLevel = "Q";
       let animationFrameId;
 
-      const levelText = {
-        Q: {
-          titlepl: "click the box for points, get 30 for the win",
-          title: "Level Q",
-          customHeader: "click 3 times to win",
-          winHeader: "wow you good a at clicking a box",
-          winMessage: `wow keep up the good work`,
-          nextLabel: "Level W",
-          time: 30,
-          requiredPoints: 30,
-          dx: 2,
-          dy: 2,
-          width: 50,
-          height: 50,
-        },
-        W: {
-          titlepl: "click the box for points, get 3 for the win",
-          title: "Level W",
-    customHeader: "click it 9999999 times to win!",
-  winHeader: "Keep on clicking",
-          winMessage: `make sure to click the box next round`,
-          nextLabel: "Level E",
-          time: 10,
-          requiredPoints: 3,
-          dx: 16,
-          dy: 16,
-          width: 50,
-          height: 50,
-        },
-        E: {
-          title: "Level E",
-          titlepl: "click the box for points, get 9999999999999 for the win",
-            customHeader: "click 9999999999999 to win you not wining still testing",
-          winHeader: "keep on goin?",
-          winMessage: "and touch some grass",
-          nextLabel: "Level R",
-          time: 999999999999,
-          requiredPoints: 9999999999999,
-          dx: 2,
-          dy: 2,
-          width: 50,
-          height: 50,
-        },
-        // add more levels prob up to M left to righ on the keboard alphabet you sigma boy, think what chipazini bananini would say, "tung tung tung  tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung tung sahur"
-      };
+      let minusGreenMode = true;
+      let isPlusMode = false;
 
+      let minusGreenModeInterval;
+      let plusModeInterval;
+
+      const colorChoices = [
+        "#FF0000",
+        "#CD5C5C",
+        "#FF4500",
+        "#DC143C",
+        "#B22222",
+      ];
       let block = {
         x: 50,
         y: 50,
@@ -107,6 +73,66 @@ const headingpl = document.getElementById("headingpl");
         color: "#000000",
       };
 
+      const levelText = {
+        Q: {
+          titlepl: "click the box for points, get 30 for the win",
+          title: "Level Q",
+          customHeader: "click 3 times to win",
+          winHeader: "wow you good a at clicking a box",
+          winMessage: "wow keep up the good work",
+          nextLabel: "Level W",
+          time: 30,
+          requiredPoints: 30,
+          dx: 2,
+          dy: 2,
+          width: 50,
+          height: 50,
+          modes: [],
+        },
+        W: {
+          titlepl: "click the box for points, get 3 for the win",
+          title: "Level W",
+          customHeader: "click it 9999999 times to win!",
+          winHeader: "Keep on clicking",
+          winMessage: "make sure to click the box next round",
+          nextLabel: "Level E",
+          time: 12,
+          requiredPoints: 7,
+          dx: 2,
+          dy: 2,
+          width: 50,
+          height: 50,
+          modes: ["minusGreenMode"],
+        },
+        E: {
+          title: "Level E",
+          titlepl: "click the box for points, get 9999999999999 for the win",
+          customHeader:
+            "click 9999999999999 to win you not wining still testing",
+          winHeader: "keep on goin?",
+          winMessage: "and touch some grass",
+          nextLabel: "Level R",
+          time: 999999999999,
+          requiredPoints: 9999999999999,
+          dx: 2,
+          dy: 2,
+          width: 50,
+          height: 50,
+          modes: ["plusMode"],
+        },
+      };
+      // sigmas add more levls here??from q to m left to righ in the keyboard alphabetttttttttttttttttttttt
+
+      function initModes(level) {
+        minusGreenMode = false;
+        isPlusMode = false;
+
+        (levelText[level].modes || []).forEach((m) => {
+          if (m === "minusGreenMode") minusGreenMode = true;
+          if (m === "plusMode") isPlusMode = true;
+        });
+      }
+
       function loadLevelSettings(level) {
         const settings = levelText[level];
         block.dx = settings.dx;
@@ -116,51 +142,57 @@ const headingpl = document.getElementById("headingpl");
         timeLeft = settings.time || 30;
         scoreDisplay.textContent = "Score: 0";
         timerDisplay.textContent = "time left: " + timeLeft + "s";
+        headingpl.textContent = levelText[currentLevel].titlepl;
+        block.x = 50;
+        block.y = 50;
+        block.color = "#FF0000";
       }
 
       function startLevel(level) {
         cancelAnimationFrame(animationFrameId);
+        clearInterval(minusGreenModeInterval);
+        clearInterval(plusModeInterval);
+        clearInterval(timerInterval);
+
         loadLevelSettings(level);
-        canvas.style.display = "block";
-        document.getElementById("winScreen").style.display = "none";
-        endScreen.style.display = "none";
-        score = 0;
+        initModes(level);
+
         timeLeft = levelText[level].time || 30;
         scoreDisplay.textContent = "Score: 0";
         timerDisplay.textContent = "time left: " + timeLeft + "s";
         headingpl.textContent = levelText[currentLevel].titlepl;
+
+        canvas.style.display = "block";
+        endScreen.style.display = "none";
+        document.getElementById("winScreen").style.display = "none";
+        score = 0;
+
+        if (minusGreenMode) startminusGreenMode();
+        if (isPlusMode) startPlusMode();
+        startTimer();
         draw();
       }
 
-      startButton.addEventListener("click", () => {
-        menu.style.display = "none";
-        startLevel(currentLevel);
-        startTimer();
+      function startminusGreenMode() {
+        minusGreenModeInterval = setInterval(() => {
+          block.color = "#00FF00";
+          setTimeout(() => {
+            block.color = "#FF0000";
+          }, 1000);
+        }, 2500);
+      }
 
-        
-        winText.textContent =
-          levelText[currentLevel].customHeader ||
-          levelText[currentLevel].winHeader;
-        winSub.innerHTML = levelText[currentLevel].winMessage;
-      });
+      function startPlusMode() {
+        plusModeInterval = setInterval(() => {
+          isPlusMode = true;
+          block.color = "#FFC0CB";
+          setTimeout(() => {
+            block.color = "#FF0000";
+            isPlusMode = false;
+          }, 2000);
+        }, 5000);
+      }
 
-      restartButton.addEventListener("click", () => {
-        endScreen.style.display = "none";
-        startLevel(currentLevel);
-        startTimer();
-      });
-
-      nextLevelButton.addEventListener("click", () => {
-        if (currentLevel === "Q") {
-          currentLevel = "W";
-          nextLevelButton.textContent = "next level E";
-        } else if (currentLevel === "W") {
-          currentLevel = "E";
-          nextLevelButton.style.display = "none";
-        }
-        startLevel(currentLevel);
-        startTimer();
-      });
       function startTimer() {
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
@@ -199,21 +231,25 @@ const headingpl = document.getElementById("headingpl");
           mouseY >= block.y &&
           mouseY <= block.y + block.height
         ) {
-          score++;
-          scoreDisplay.textContent = "Score: " + score;
+          if (isPlusMode && block.color === "#FFC0CB") {
+            score = Math.max(0, score + 2);
+          } else {
+            score++;
+          }
 
-          const colorChoices = [
-            "#FF0000",
-            "#CD5C5C",
-            "#FF4500",
-            "#DC143C",
-            "#B22222",
-          ];
-          block.color =
-            colorChoices[Math.floor(Math.random() * colorChoices.length)];
+          if (minusGreenMode && block.color === "#00FF00") {
+            score = Math.max(0, score - 2);
+          }
+
+          if (!minusGreenMode && !isPlusMode) {
+            block.color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
+          }
+          scoreDisplay.textContent = "Score: " + score;
 
           if (score >= levelText[currentLevel].requiredPoints) {
             clearInterval(timerInterval);
+            clearInterval(minusGreenModeInterval);
+            clearInterval(plusModeInterval);
             canvas.style.display = "none";
             document.getElementById("winScreen").style.display = "block";
 
@@ -223,9 +259,29 @@ const headingpl = document.getElementById("headingpl");
             winSub.innerHTML = levelText[currentLevel].winMessage;
             nextLevelButton.textContent = levelText[currentLevel].nextLabel;
             nextLevelButton.style.display = "inline-block";
-            
           }
         }
+      });
+
+      startButton.addEventListener("click", () => {
+        menu.style.display = "none";
+        startLevel(currentLevel);
+      });
+      restartButton.addEventListener("click", () => {
+        endScreen.style.display = "none";
+        score = 0;
+        timeLeft = levelText[currentLevel].time;
+        startLevel(currentLevel);
+      });
+
+      nextLevelButton.addEventListener("click", () => {
+        if (currentLevel === "Q") {
+          currentLevel = "W";
+        } else if (currentLevel === "W") {
+          currentLevel = "E";
+          nextLevelButton.style.display = "none";
+        }
+        startLevel(currentLevel);
       });
     </script>
   </body>
