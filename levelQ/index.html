@@ -53,6 +53,9 @@
       let minusGreenMode = true;
       let isPlusMode = false;
 
+      let isPurpleMode = false;
+      let purpleModeInterval;
+
       let minusGreenModeInterval;
       let plusModeInterval;
 
@@ -92,7 +95,7 @@
         W: {
           titlepl: "click the box for points, get 3 for the win",
           title: "Level W",
-          customHeader: "click it 9999999 times to win!",
+          customHeader: "click it 30 times to win!",
           winHeader: "Keep on clicking",
           winMessage: "make sure to click the box next round",
           nextLabel: "Level E",
@@ -106,30 +109,47 @@
         },
         E: {
           title: "Level E",
-          titlepl: "click the box for points, get 9999999999999 for the win",
-          customHeader:
-            "click 9999999999999 to win you not wining still testing",
-          winHeader: "keep on goin?",
-          winMessage: "and touch some grass",
+          titlepl: "click the box for points, get 30 for the win",
+          customHeader: "click 32 to win win",
+          winHeader: "Next level R?",
+          winMessage: "",
           nextLabel: "Level R",
-          time: 999999999999,
-          requiredPoints: 9999999999999,
+          time: 13,
+          requiredPoints: 30,
           dx: 2,
           dy: 2,
           width: 50,
           height: 50,
           modes: ["plusMode"],
         },
+        R: {
+          title: "Level R",
+          titlepl: "click the box for points, get 30 for the win",
+          customHeader: "click 32 to win win",
+          winHeader: "more levels?",
+          winMessage: "next level T",
+          nextLabel: "Level R",
+          time: 19,
+          requiredPoints: 32,
+          dx: 2,
+          dy: 2,
+          width: 55,
+          height: 55,
+          modes: ["purpleMode"],
+        },
       };
-      // sigmas add more levls here??from q to m left to righ in the keyboard alphabetttttttttttttttttttttt
+
+      // sigmas add more levls here??from q to m left to righ in the keyboard alphabettttttttttttttttttttttttttt-tortttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
 
       function initModes(level) {
         minusGreenMode = false;
         isPlusMode = false;
+        isPurpleMode = false;
 
         (levelText[level].modes || []).forEach((m) => {
           if (m === "minusGreenMode") minusGreenMode = true;
           if (m === "plusMode") isPlusMode = true;
+          if (m === "purpleMode") isPurpleMode = true;
         });
       }
 
@@ -149,10 +169,12 @@
       }
 
       function startLevel(level) {
+        currentLevel = level;
         cancelAnimationFrame(animationFrameId);
         clearInterval(minusGreenModeInterval);
         clearInterval(plusModeInterval);
         clearInterval(timerInterval);
+        clearInterval(purpleModeInterval);
 
         loadLevelSettings(level);
         initModes(level);
@@ -169,6 +191,7 @@
 
         if (minusGreenMode) startminusGreenMode();
         if (isPlusMode) startPlusMode();
+        if (isPurpleMode) startPurpleMode();
         startTimer();
         draw();
       }
@@ -191,6 +214,15 @@
             isPlusMode = false;
           }, 2000);
         }, 5000);
+      }
+
+      function startPurpleMode() {
+        purpleModeInterval = setInterval(() => {
+          block.color = "#800080";
+          setTimeout(() => {
+            block.color = "#FF0000";
+          }, 1500);
+        }, 4000);
       }
 
       function startTimer() {
@@ -233,6 +265,11 @@
         ) {
           if (isPlusMode && block.color === "#FFC0CB") {
             score = Math.max(0, score + 2);
+          } else if (isPurpleMode && block.color === "#800080") {
+            const purpleBonus = [2, 1, 0, -1, -2];
+            score +=
+              purpleBonus[Math.floor(Math.random() * purpleBonus.length)];
+            score = Math.max(0, score);
           } else {
             score++;
           }
@@ -241,8 +278,9 @@
             score = Math.max(0, score - 2);
           }
 
-          if (!minusGreenMode && !isPlusMode) {
-            block.color = colorChoices[Math.floor(Math.random() * colorChoices.length)];
+          if (!minusGreenMode && !isPlusMode && !isPurpleMode) {
+            block.color =
+              colorChoices[Math.floor(Math.random() * colorChoices.length)];
           }
           scoreDisplay.textContent = "Score: " + score;
 
